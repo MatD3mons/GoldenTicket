@@ -1,6 +1,6 @@
-package fr.matd3mons.net.goldenticket.Events;
+package fr.matd3mons.net.goldenticket.events;
 
-import fr.matd3mons.net.goldenticket.Manager.GoldenTicketManager;
+import fr.matd3mons.net.goldenticket.managers.GoldenTicketManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

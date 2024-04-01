@@ -1,6 +1,6 @@
-package fr.matd3mons.net.goldenticket.Manager;
+package fr.matd3mons.net.goldenticket.managers;
 
-import fr.matd3mons.net.goldenticket.Dto.PlayerDto;
+import fr.matd3mons.net.goldenticket.dto.PlayerDto;
 import fr.matd3mons.net.goldenticket.GoldenTicket;
 import fr.matd3mons.net.minecraftbddapi.Core.MinecraftDao;
 import fr.matd3mons.net.minecraftbddapi.MinecraftBddAPI;

@@ -1,3 +1,6 @@
 name: GoldenTicket
 version: '${project.version}'
 main: fr.matd3mons.net.goldenticket.GoldenTicket
+commands:
+  goldenticket:
+    description: '/goldenticket'

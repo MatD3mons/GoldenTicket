@@ -1,4 +1,4 @@
-package fr.matd3mons.net.goldenticket.Dto;
+package fr.matd3mons.net.goldenticket.dto;
 
 import fr.matd3mons.net.minecraftbddapi.API.Dto;
 
