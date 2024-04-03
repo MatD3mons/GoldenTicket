@@ -3,7 +3,6 @@ package fr.matd3mons.net.goldenticket.commands;
 import fr.matd3mons.net.goldenticket.managers.GoldenTicketManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,70 +15,113 @@ import java.util.stream.Collectors;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
+    public static boolean giveall(CommandSender sender, Command cmd, String label, String[] args){
+        if (args.length == 2 && StringUtils.isNumeric(args[1])) {
+            long amount = Long.parseLong(args[1]);
+            GoldenTicketManager.giveAllGoldenTicket(amount);
+            return true;
+        } else {
+            sender.sendMessage("§6 /goldenticket giveall [amount]");
+            return false;
+        }
+    }
+
+    public static boolean add(CommandSender sender, Command cmd, String label, String[] args){
+        if (args.length >= 2 && StringUtils.isNumeric(args[1])) {
+            long amount = Long.parseLong(args[1]);
+            Player player = null;
+
+            if(args.length == 3) {
+                player = Bukkit.getPlayer(args[2]);
+                if (player == null || !player.isOnline()) {
+                    sender.sendMessage("§6Le joueur n'est pas en ligne");
+                    return false;
+                }
+            }
+            else if(args.length == 2 && sender instanceof Player)
+                player = (Player) sender;
+            else{
+                sender.sendMessage("§6 /goldenticket add [amount] [player]");
+                return false;
+            }
+
+            GoldenTicketManager.addGoldenTicket(player, amount);
+            return true;
+        }
+        else {
+            sender.sendMessage("§6 /goldenticket add [amount] [player]");
+            return false;
+        }
+    }
+
+    public static boolean remove(CommandSender sender, Command cmd, String label, String[] args){
+        if (args.length >= 2 && StringUtils.isNumeric(args[1])) {
+            long amount = Long.parseLong(args[1]);
+            Player player = null;
+            if(args.length == 3) {
+                player = Bukkit.getPlayer(args[2]);
+                if (player == null || !player.isOnline()) {
+                    sender.sendMessage("§6Le joueur n'est pas en ligne");
+                    return false;
+                }
+            }
+            else if(args.length == 2 && sender instanceof Player)
+                player = (Player) sender;
+            else{
+                sender.sendMessage("§6 /goldenticket remove [amount] [player]");
+                return false;
+            }
+
+            GoldenTicketManager.removeGoldenTicket(player, amount);
+            return true;
+        }
+        else {
+            sender.sendMessage("§6 /goldenticket remove [amount] [player]");
+            return false;
+        }
+    }
+
+    public static boolean info(CommandSender sender, Command cmd, String label, String[] args){
+        if (args.length == 2 && StringUtils.isNumeric(args[1])) {
+            Player player = Bukkit.getPlayer(args[1]);
+            if (player == null || !player.isOnline()) {
+                sender.sendMessage("§6Le joueur n'est pas en ligne");
+                return false;
+            }
+            long amount = GoldenTicketManager.getGoldenTicketForPlayer(player);
+            player.sendMessage(player.getDisplayName()+"§6 a §e" + amount + " ticket(s) d'or !");
+            return true;
+        } else {
+            sender.sendMessage("§6 /goldenticket info [player]");
+            return false;
+        }
+    }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        if (!(sender.hasPermission("goldenticket.admin") || sender.isOp())) {
+        if (!(sender.hasPermission("goldenticket.admin") || sender.isOp()))
             return false;
-        }
-        if (args.length == 0) {
-            sender.sendMessage("§6 /goldenticket giveall [amount]");
-            sender.sendMessage("§6 /goldenticket add [amount] [player]");
-            sender.sendMessage("§6 /goldenticket remove [amount] [player]");
-            sender.sendMessage("§6 /goldenticket give [player]");
-            sender.sendMessage("§6 /goldenticket reset");
-        }
-        else if (args.length == 1) {
+
+        if (args.length >= 1) {
             switch (args[0]) {
                 case "giveall":
-                    sender.sendMessage("§6 /goldenticket giveall [amount]");
-                    break;
+                    return giveall(sender,cmd,label,args);
                 case "add":
-                    sender.sendMessage("§6 /goldenticket add [amount] [player]");
-                    break;
+                    return add(sender,cmd,label,args);
                 case "remove":
-                    sender.sendMessage("§6 /goldenticket remove [amount] [player]");
-                    break;
-                case "get":
-                    sender.sendMessage("§6 /goldenticket give [player]");
-                    break;
+                    return remove(sender,cmd,label,args);
+                case "info":
+                    return info(sender,cmd,label,args);
                 case "reset":
                     GoldenTicketManager.clearAllGoldenTickets();
-                    break;
-            }
-        } else if (args.length == 2) {
-            if (StringUtils.isNumeric(args[1]) && args[0].equals("giveall")) {
-                long amount = Long.parseLong(args[1]);
-                GoldenTicketManager.giveAllGoldenTicket(amount);
-            } else if (args[0].equals("get")) {
-                Player player = Bukkit.getPlayer(args[1]);
-                if (player == null || !player.isOnline()) {
-                    sender.sendMessage("§6 joueur pas en ligne");
-                    return false;
-                }
-                long amount = GoldenTicketManager.getGoldenTicketForPlayer(player);
-                player.sendMessage("§6 Tu as §e" + amount + " ticket(s) d'or !");
             }
         }
-        else if (args.length == 3) {
-            if (StringUtils.isNumeric(args[1]) && (args[0].equals("add") || args[0].equals("remove"))) {
-                long amount = Long.parseLong(args[1]);
-                Player player = Bukkit.getPlayer(args[2]);
-                if (player == null || !player.isOnline()) {
-                    sender.sendMessage("§6 joueur pas en ligne");
-                    return false;
-                }
-                switch (args[0]) {
-                    case "add":
-                        GoldenTicketManager.addGoldenTicket(player, amount);
-                        break;
-                    case "remove":
-                        GoldenTicketManager.removeGoldenTicket(player, amount);
-                        break;
-                }
-            }
-        }
-        return true;
+        sender.sendMessage("§6 /goldenticket giveall [amount]");
+        sender.sendMessage("§6 /goldenticket add [amount] [player]");
+        sender.sendMessage("§6 /goldenticket remove [amount] [player]");
+        sender.sendMessage("§6 /goldenticket info [player]");
+        sender.sendMessage("§6 /goldenticket reset");
+        return false;
     }
 
     @Override
@@ -87,10 +129,10 @@ public class Commands implements CommandExecutor, TabCompleter {
         List<String> completionList = new ArrayList<>();
 
         if(strings.length == 1)
-            completionList.addAll(Arrays.asList("giveall", "reset","add","remove", "get"));
+            completionList.addAll(Arrays.asList("giveall", "reset","add","remove", "info"));
 
         if(strings.length == 2)
-            if(strings[0].equals("get"))
+            if(strings[0].equals("info"))
                 completionList.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
 
         if(strings.length == 3)
